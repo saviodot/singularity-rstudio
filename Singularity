@@ -34,7 +34,8 @@ From: j-andrews7/singularity-r
   apt-get install -y --no-install-recommends \
     ca-certificates \
     wget \
-    gdebi-core
+    gdebi-core \
+    libproj-dev
   wget \
     --no-verbose \
     -O rstudio-server.deb \
