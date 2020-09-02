@@ -51,5 +51,8 @@ From: j-andrews7/singularity-r
   rm -f get-pip.py
   pip3 install ldap3
 
+  # Disable session timeout
+  echo "session-timeout-minutes=0" > /etc/rstudio/session.conf
+
   # Clean up
   rm -rf /var/lib/apt/lists/*
