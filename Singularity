@@ -48,11 +48,11 @@ From: j-andrews7/singularity-r
     --no-verbose \
     -O get-pip.py \
     "https://bootstrap.pypa.io/get-pip.py"
-  python3 get-pip.py
+  python3.8 get-pip.py
   rm -f get-pip.py
-  pip3 install ldap3
-  pip3 install numpy 
-  pip3 install MACS2
+  python3.8 -m pip install ldap3
+  python3.8 -m pip install numpy 
+  python3.8 -m pip install MACS2
 
   # Disable session timeout
   echo "session-timeout-minutes=0" > /etc/rstudio/session.conf
