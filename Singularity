@@ -51,6 +51,7 @@ From: j-andrews7/singularity-r
   python3 get-pip.py
   rm -f get-pip.py
   pip3 install ldap3
+  pip3 install MACS2
 
   # Disable session timeout
   echo "session-timeout-minutes=0" > /etc/rstudio/session.conf
