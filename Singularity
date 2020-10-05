@@ -51,6 +51,7 @@ From: j-andrews7/singularity-r
   python3 get-pip.py
   rm -f get-pip.py
   pip3 install ldap3
+  pip3 install numpy 
   pip3 install MACS2
 
   # Disable session timeout
