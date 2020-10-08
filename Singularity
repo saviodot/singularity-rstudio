@@ -55,7 +55,7 @@ From: j-andrews7/singularity-r
   python3.8 -m pip install MACS2
 
   # Disable session timeout
-  echo "session-timeout-minutes=0" > /etc/rstudio/session.conf
+  echo "session-timeout-minutes=0" > /etc/rstudio/rsession.conf
 
   # Clean up
   rm -rf /var/lib/apt/lists/*
