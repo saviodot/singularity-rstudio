@@ -30,11 +30,13 @@ From: j-andrews7/singularity-r
   export RSTUDIO_VERSION=1.2.5033
 
   # Install RStudio Server, added libgit2-dev
+  add-apt-repository ppa:cran/libgit2
   apt-get update
   apt-get install -y --no-install-recommends \
     ca-certificates \
     wget \
     gdebi-core \
+    libssh2-1-dev \
     libgit2-dev \
     libproj-dev
   wget \
