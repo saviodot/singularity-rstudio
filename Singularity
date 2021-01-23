@@ -29,7 +29,7 @@ From: j-andrews7/singularity-r
   # Software versions
   export RSTUDIO_VERSION=1.2.5033
 
-  # Install RStudio Server
+  # Install RStudio Server, added libgit2-dev
   apt-get update
   apt-get install -y --no-install-recommends \
     ca-certificates \
