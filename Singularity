@@ -35,6 +35,7 @@ From: j-andrews7/singularity-r
     ca-certificates \
     wget \
     gdebi-core \
+    libgit2-dev \
     libproj-dev
   wget \
     --no-verbose \
