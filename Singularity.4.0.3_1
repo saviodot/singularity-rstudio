@@ -67,8 +67,8 @@ From: j-andrews7/singularity-r
     libssl-dev \
     libxml2-dev \
     libcairo2-dev \
-    libxt-dev
-    # nvidia-460
+    libxt-dev \
+    nvidia-430
   wget \
     --no-verbose \
     -O rstudio-server.deb \
