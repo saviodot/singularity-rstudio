@@ -38,6 +38,7 @@ From: j-andrews7/singularity-r
   export TURBOVNC_VERSION=2.1.2
 
   # Install RStudio Server, added libgit2-dev
+  add-apt-repository ppa:graphics-drivers/ppa
   add-apt-repository ppa:cran/libgit2
   apt-get update
   apt-get install -y --no-install-recommends \
@@ -54,7 +55,7 @@ From: j-andrews7/singularity-r
     libssh2-1-dev \
     libgit2-dev \
     libproj-dev \
-    nvidia-driver-460
+    nvidia-460
   wget \
     --no-verbose \
     -O rstudio-server.deb \
