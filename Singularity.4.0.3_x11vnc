@@ -1,5 +1,5 @@
-BootStrap: shub
-From: j-andrews7/singularity-r
+Bootstrap: docker
+From: x11vnc/desktop:master
 
 %labels
   Maintainer Jared Andrews
@@ -18,6 +18,8 @@ From: j-andrews7/singularity-r
 
 %environment
   export PATH=/usr/lib/rstudio-server/bin:${PATH}
+  RESOLUTION=3840x2160
+  export RESOLUTION
 
 %setup
   install -Dv \
@@ -55,7 +57,7 @@ From: j-andrews7/singularity-r
     r-base-html=${R_VERSION}* \
     r-doc-html=${R_VERSION}* \
     libcurl4-openssl-dev \
-    libssl1.0.0 \
+    libssl1.1 \
     libssl-dev \
     libxml2-dev \
     libcairo2-dev \
