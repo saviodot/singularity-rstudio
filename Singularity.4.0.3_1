@@ -9,11 +9,6 @@ From: j-andrews7/singularity-r
 %help
   This will run RStudio Server
 
-%apprun vncserver
-  exec vncserver "${@}"
-
-%apprun vncpasswd
-  exec vncpasswd "${@}"
   
 %apprun rserver
   exec rserver "${@}"
@@ -23,7 +18,6 @@ From: j-andrews7/singularity-r
 
 %environment
   export PATH=/usr/lib/rstudio-server/bin:${PATH}
-  export PATH=/opt/TurboVNC/bin:${PATH}
 
 %setup
   install -Dv \
@@ -37,10 +31,8 @@ From: j-andrews7/singularity-r
   # Software versions
   export R_VERSION=4.0.3
   export RSTUDIO_VERSION=1.3.1093
-  export TURBOVNC_VERSION=2.1.2
 
   # Install RStudio Server, added libgit2-dev
-  add-apt-repository ppa:graphics-drivers/ppa
   add-apt-repository ppa:cran/libgit2
   apt-get update
   apt-get install -y --no-install-recommends \
@@ -50,7 +42,6 @@ From: j-andrews7/singularity-r
     xkb-data \
     x11-xkb-utils \
     xserver-xorg-core \
-    ubuntu-gnome-desktop \
     ca-certificates \
     wget \
     gdebi-core \
@@ -64,17 +55,18 @@ From: j-andrews7/singularity-r
     r-base-html=${R_VERSION}* \
     r-doc-html=${R_VERSION}* \
     libcurl4-openssl-dev \
+    libssl1.1 \
     libssl-dev \
     libxml2-dev \
     libcairo2-dev \
-    libxt-dev \
-    nvidia-driver-430
+    libxt-dev 
   wget \
     --no-verbose \
     -O rstudio-server.deb \
-    "https://download2.rstudio.org/server/trusty/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb"
+    "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb"
   gdebi -n rstudio-server.deb
   rm -f rstudio-server.deb
+
 
   # Add support for LDAP authentication
   wget \
@@ -102,11 +94,6 @@ From: j-andrews7/singularity-r
   /usr/sbin/update-locale LANG=en_US.UTF-8
   export LC_ALL=en_US.UTF-8
   export LANG=en_US.UTF-8
-
-  # Install TurboVNC
-  wget https://sourceforge.net/projects/turbovnc/files/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb -q
-  dpkg -i turbovnc_${TURBOVNC_VERSION}_amd64.deb
-  rm turbovnc_${TURBOVNC_VERSION}_amd64.deb
 
   # Clean up
   rm -rf /var/lib/apt/lists/*
