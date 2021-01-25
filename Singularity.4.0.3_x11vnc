@@ -1,5 +1,5 @@
-Bootstrap: docker
-From: x11vnc/desktop:master
+BootStrap: shub
+From: saviodot/singularity-r:4.0.2
 
 %labels
   Maintainer Jared Andrews
