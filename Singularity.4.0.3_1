@@ -55,7 +55,7 @@ From: j-andrews7/singularity-r
     r-base-html=${R_VERSION}* \
     r-doc-html=${R_VERSION}* \
     libcurl4-openssl-dev \
-    libssl1.1 \
+    libssl1.0.0 \
     libssl-dev \
     libxml2-dev \
     libcairo2-dev \
