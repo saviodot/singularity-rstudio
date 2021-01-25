@@ -23,8 +23,8 @@ From: saviodot/singularity-r:4.0.2
 %environment
   export PATH=/usr/lib/rstudio-server/bin:${PATH}
   export PATH=/opt/TurboVNC/bin:${PATH}
-  RESOLUTION=3840x2160
-  export RESOLUTION
+  RESOLUT=3840x2160
+  export RESOLUT
 
 %setup
   install -Dv \
