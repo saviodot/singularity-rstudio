@@ -46,6 +46,7 @@ From: x11vnc/desktop:20.04
   export LANG=en_US.UTF-8
   export LANGUAGE=en_US.UTF-8
   export PATH=/opt/TurboVNC/bin:${PATH}
+  export RSTUDIO_PASSWORD
 
 %setup
   install -Dv \
@@ -93,6 +94,7 @@ From: x11vnc/desktop:20.04
   /usr/sbin/update-locale LANG=en_US.UTF-8
   export LC_ALL=en_US.UTF-8
   export LANG=en_US.UTF-8
+  export RSTUDIO_PASSWORD
 
   # Install R
   echo "deb http://cran.r-project.org/bin/linux/ubuntu focal-cran40/" > /etc/apt/sources.list.d/r.list
