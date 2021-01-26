@@ -1,86 +1,184 @@
+BootStrap: docker
+From: x11vnc/desktop:20.04
 
-#!/bin/bash
+%labels
+  Maintainer Savio Chow
+  R_Version 4.0.3
+  RStudio_Version 1.4.1103
+  Image_Name singularity-rstudio-base
+  Image_Version singularity-rstudio-base_0005
 
-set -u
-# SINGULARITY_IMAGE="singularity run shub://granek/crne_transposon:rstudio --app rstudio"
-# SINGULARITY_DIR="$HOME/container_images"
+%help
+  This will run RStudio Server with tidyverse and support for knitting
 
-SESSION_INFO_DIR="$HOME/.session_info"
-mkdir -p $SESSION_INFO_DIR
+%apprun vncserver
+  exec vncserver "${@}"
 
-# # SINGULARITY_IMAGE="shub://granek/mar1_rnaseq:rstudio"
-# SINGULARITY_IMAGE="${1:-$SINGULARITY_DIR/mar1_rstudio.simg}"
-# 
-# # DATA_BASE_DIR="${DATA_BASE_DIR:-$HOME}"
-# # WORKSPACE_BASE_DIR="${WORKSPACE_BASE_DIR:-$HOME}"
-# 
-# DATA="$DATA_BASE_DIR/hts2018/rawdata"
-# WORKSPACE="$WORKSPACE_BASE_DIR/hts2018/workspace"
-# 
-#  
-# if [ -d "${DATA}" ]; then
-#     # BIND_ARGS="--bind ${DATA}:/data:ro"
-#     BIND_ARGS="--bind ${DATA}:/data"
-# else
-#     echo "Make sure DATA exists: $DATA"
-# fi
-# 
-# if [ -d "${WORKSPACE}" ]; then
-#     BIND_ARGS="$BIND_ARGS --bind ${WORKSPACE}:/workspace"
-# else
-#     echo "Make sure WORKSPACE exists: $WORKSPACE"
-# fi
-# 
-# mkdir -p $SINGULARITY_PULLFOLDER $SINGULARITY_CACHEDIR
-#--------------------------------------------------------------------------------
+%apprun vncpasswd
+  exec vncpasswd "${@}"
 
-# Look for an open port to use in range $LOWERPORT to $UPPERPORT
-LOWERPORT=50000 
-UPPERPORT=65535
-for RSTUDIO_PORT in $(seq $LOWERPORT $UPPERPORT);
-do
-    # RSTUDIO_PORT="`shuf -i $LOWERPORT-$UPPERPORT -n 1`"
-    echo "Testing port: $RSTUDIO_PORT"
-    ss -lpn | grep -q ":$RSTUDIO_PORT " || break
-done
+%runscript
+  exec port_and_password "${@}"
 
-# SESSION_INFO_FILE="$SESSION_INFO_DIR/session_info_$(basename $SINGULARITY_IMAGE)_${RSTUDIO_PORT}.txt"
-SESSION_INFO_FILE="$SESSION_INFO_DIR/session_info_port_${RSTUDIO_PORT}_`hostname | cut -f1 -d' '`.txt"
-echo $SESSION_INFO_FILE
-export RSTUDIO_PASSWORD="`openssl rand -base64 16 | colrm 20`"
+%apprun R
+  exec R "${@}"
 
-# Make $SESSION_INFO_FILE only readable by owner
-rm -f $SESSION_INFO_FILE; touch $SESSION_INFO_FILE; chmod 600 $SESSION_INFO_FILE
-grep IMAGE /.singularity.d/labels.json >> $SESSION_INFO_FILE
-# jq  .IMAGE_VERSION /.singularity.d/labels.json
-# jq  .IMAGE_NAME /.singularity.d/labels.json
-printf "\n\nRStudio URL:\t\thttp://`hostname -A | cut -f1 -d' '`:${RSTUDIO_PORT}/\n" >> $SESSION_INFO_FILE
-printf "\nRStudio Username:\t$USER\n"  >> $SESSION_INFO_FILE
-printf "RStudio Password:\t$RSTUDIO_PASSWORD\n" >> $SESSION_INFO_FILE
+%apprun Rscript
+  exec Rscript "${@}"
 
-cat $SESSION_INFO_FILE
-export TMPDIR="$(mktemp -d)"
-trap "{ rm -rf $SESSION_INFO_FILE $TMPDIR; }" EXIT
+%apprun rserver
+  exec rserver "${@}"
+
+%apprun rstudio
+  exec rserver "${@}"
+
+%apprun default
+  exec "${@}"
+
+%apprun pp
+  exec port_and_password "${@}"
 
 
-#singularity run  --app rstudio $BIND_ARGS $SINGULARITY_IMAGE 
-# Setting '--auth-minimum-user-id $UID' to fix error "Unable to connect to service"
-# by default RStudio gives this error when it is run by a user with UID less than 1000
-# this hack sets the minimum to the UID of the current user!
-# RSERVER_OPTIONS=" 
-# RSERVER_OPTIONS="--auth-none 0 --auth-pam-helper rstudio_auth --www-port $RSTUDIO_PORT"
+%environment
+  export PATH=/usr/lib/rstudio-server/bin:${PATH}:/usr/lib/rstudio-server/bin/pandoc
+  export SHELL=/bin/bash
+  export LC_ALL=en_US.UTF-8
+  export LANG=en_US.UTF-8
+  export LANGUAGE=en_US.UTF-8
+  export PATH=/opt/TurboVNC/bin:${PATH}
+  export RSTUDIO_PASSWORD
 
-rserver --auth-none 0 \
-	--auth-pam-helper-path rstudio_auth \
-	--www-port 8787 \
-	--auth-minimum-user-id "$UID" \
-	--server-data-dir "${TMPDIR}" \
-	--secure-cookie-key-file "${TMPDIR}/rstudio-server/secure-cookie-key"
+%setup
+  install -Dv \
+    rstudio_auth_1_3.sh \
+    ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/rstudio_auth
+  install -Dv \
+    ldap_auth.py \
+    ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/ldap_auth
 
-	
-#   exec rserver "${@}"
+  install -Dv \
+    port_and_password_1_3.sh \
+    ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/port_and_password
 
-# rserver \
-#   --auth-pam-helper-path "${RSTUDIO_AUTH}" \
-#   --auth-encrypt-password 0 \
-#   --rsession-path "${RSESSION_WRAPPER_FILE}" \
+%post
+  # Software versions
+  export R_VERSION=4.0.3
+  export RSTUDIO_VERSION=1.4.1103
+  export TURBOVNC_VERSION=2.1.2
+
+  export DEBIAN_FRONTEND=noninteractive
+
+  # Get dependencies
+  # add-apt-repository ppa:cran/libgit2
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    apt-utils \
+    gnupg2 \
+    xauth \
+    xfonts-base \
+    xkb-data \
+    x11-xkb-utils \
+    xserver-xorg-core \
+    ubuntu-gnome-desktop \
+    ca-certificates \
+    wget \
+    gdebi-core \
+    libssh2-1-dev \
+    libgit2-dev \
+    libproj-dev \
+    locales
+
+  # Configure default locale
+  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  locale-gen en_US.utf8
+  /usr/sbin/update-locale LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+  export LANG=en_US.UTF-8
+  export RSTUDIO_PASSWORD
+
+  # Install R
+  echo "deb http://cran.r-project.org/bin/linux/ubuntu focal-cran40/" > /etc/apt/sources.list.d/r.list
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+  # apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    r-base=${R_VERSION}* \
+    r-base-core=${R_VERSION}* \
+    r-base-dev=${R_VERSION}* \
+    r-recommended=${R_VERSION}* \
+    r-base-html=${R_VERSION}* \
+    r-doc-html=${R_VERSION}* \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libcairo2-dev \
+    libxt-dev
+
+  # Add a default CRAN mirror
+  echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')" >> /usr/lib/R/etc/Rprofile.site
+
+  # Add a directory for host R libraries
+  mkdir -p /library
+  echo "R_LIBS_SITE=/library:\${R_LIBS_SITE}" >> /usr/lib/R/etc/Renviron.site
+
+  # Clean up
+  # rm -rf /var/lib/apt/lists/*
+
+  # Install RStudio Server
+  # apt-get update
+  apt-get install -y --no-install-recommends \
+    ca-certificates \
+    wget \
+    gdebi-core \
+    libssl1.1 \
+    libssl-dev \
+    dpkg-sig \
+    python3-ldap3
+
+  gpg2 --keyserver keys.gnupg.net --recv-keys 3F32EE77E331692F
+
+  wget --no-verbose \
+       -O rstudio-server.deb \
+       "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" && \
+       dpkg-sig --verify rstudio-server.deb && \
+    gdebi -n rstudio-server.deb && \
+    rm rstudio-server.deb
+
+  # Install tidyverse, here, and packages necessary for knitting to HTML 
+  Rscript -e "install.packages(pkgs = c('tidyverse','here','caTools','rprojroot','Rcpp', 'base64enc', 'digest', 'evaluate', 'glue', 'highr', 'htmltools', 'jsonlite', 'knitr', 'magrittr', 'markdown', 'mime', 'rmarkdown', 'rprojroot', 'stringi', 'stringr', 'tinytex', 'xfun', 'yaml'), \
+     repos='https://mirror.las.iastate.edu/CRAN/', \
+     dependencies=TRUE, \
+     clean = TRUE)"
+
+  # Install extra stuff
+  apt-get install -y --no-install-recommends \
+    bsdmainutils \
+    iproute2 \
+    libxml2-dev \
+    curl \
+    wget \
+    bzip2 \
+    ca-certificates \
+    sudo \
+    locales \
+    emacs \
+    less \
+    make \
+    git \
+    ssh \
+    htop \
+    jq
+
+
+  # Install TurboVNC
+  wget https://sourceforge.net/projects/turbovnc/files/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb -q
+  dpkg -i turbovnc_${TURBOVNC_VERSION}_amd64.deb
+  rm turbovnc_${TURBOVNC_VERSION}_amd64.deb
+
+  # Clean up
+  apt-get clean && rm -rf /var/lib/apt/lists/*
+
+  # Make Mountpoints
+  mkdir -p /data
+  mkdir -p /scratch
+  mkdir -p /workspace
