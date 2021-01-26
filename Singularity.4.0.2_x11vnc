@@ -6,7 +6,7 @@ From: saviodot/singularity-r:4.0.2
   RStudio_Version 1.2.5033
 
 %help
-  This will run RStudio Server
+  This will run RStudio Server.
 
 %apprun vncserver
   exec vncserver "${@}"
