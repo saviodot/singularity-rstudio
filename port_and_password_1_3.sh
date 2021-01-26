@@ -47,6 +47,7 @@ done
 SESSION_INFO_FILE="$SESSION_INFO_DIR/session_info_port_${RSTUDIO_PORT}_`hostname | cut -f1 -d' '`.txt"
 echo $SESSION_INFO_FILE
 #export RSTUDIO_PASSWORD="`openssl rand -base64 16 | colrm 20`"
+export RSTUDIO_PASSWORD
 
 # Make $SESSION_INFO_FILE only readable by owner
 rm -f $SESSION_INFO_FILE; touch $SESSION_INFO_FILE; chmod 600 $SESSION_INFO_FILE
