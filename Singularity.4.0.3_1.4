@@ -47,7 +47,6 @@ From: x11vnc/desktop:20.04
   export LANGUAGE=en_US.UTF-8
   export PATH=/opt/TurboVNC/bin:${PATH}
   export RSTUDIO_PASSWORD
-  export RESOURCES_PATH="/resources"
   
 %setup
   install -Dv \
@@ -60,16 +59,15 @@ From: x11vnc/desktop:20.04
   install -Dv \
     port_and_password_1_3.sh \
     ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/port_and_password
-    
-  mkdir /resources && chmod a+rwx /resources
+
     
 
 %files
-  resources/tools/vs-code-server.sh $RESOURCES_PATH/tools/vs-code-server.sh
-  resources/tools/ungit.sh $RESOURCES_PATH/tools/ungit.sh
-  resources/tools/netdata.sh $RESOURCES_PATH/tools/netdata.sh
-  resources/tools/filebrowser.sh $RESOURCES_PATH/tools/filebrowser.sh
-  resources/tools/vs-code-desktop.sh $RESOURCES_PATH/tools/vs-code-desktop.sh
+  resources/tools/vs-code-server.sh /opt
+  resources/tools/ungit.sh /opt
+  resources/tools/netdata.sh /opt
+  resources/tools/filebrowser.sh /opt
+  resources/tools/vs-code-desktop.sh /opt
 %post
   # Software versions
   export R_VERSION=4.0.3
@@ -217,22 +215,22 @@ From: x11vnc/desktop:20.04
   rm turbovnc_${TURBOVNC_VERSION}_amd64.deb
 
   ## VS Code Server: https://github.com/codercom/code-server
-  /bin/bash $RESOURCES_PATH/tools/vs-code-server.sh --install
+  /bin/bash /opt/vs-code-server.sh --install
 
   ## ungit
-  /bin/bash $RESOURCES_PATH/tools/ungit.sh --install
+  /bin/bash /opt/ungit.sh --install
 
   ## netdata
-  /bin/bash $RESOURCES_PATH/tools/netdata.sh --install
+  /bin/bash /opt/netdata.sh --install
 
   ## Glances webtool is installed in python section below
   pip install --no-cache-dir 'glances[action,browser,cloud,cpuinfo,docker,export,folders,gpu,graph,ip,raid,snmp,web,wifi]'
   
   ## Filebrowser
-  /bin/bash $RESOURCES_PATH/tools/filebrowser.sh --install
+  /bin/bash /opt/filebrowser.sh --install
   
   # Install Visual Studio Code
-  /bin/bash $RESOURCES_PATH/tools/vs-code-desktop.sh --install
+  /bin/bash /opt/vs-code-desktop.sh --install
 
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
