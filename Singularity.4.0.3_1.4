@@ -153,10 +153,10 @@ From: x11vnc/desktop:20.04
     rm rstudio-server.deb
 
   # Install tidyverse, here, and packages necessary for knitting to HTML 
-  Rscript -e "install.packages(pkgs = c('tidyverse','here','caTools','rprojroot','Rcpp', 'base64enc', 'digest', 'evaluate', 'glue', 'highr', 'htmltools', 'jsonlite', 'knitr', 'magrittr', 'markdown', 'mime', 'rmarkdown', 'rprojroot', 'stringi', 'stringr', 'tinytex', 'xfun', 'yaml'), \
-     repos='https://mirror.las.iastate.edu/CRAN/', \
-     dependencies=TRUE, \
-     clean = TRUE)"
+  #Rscript -e "install.packages(pkgs = c('tidyverse','here','caTools','rprojroot','Rcpp', 'base64enc', 'digest', 'evaluate', 'glue', 'highr', 'htmltools', 'jsonlite', 'knitr', 'magrittr', 'markdown', 'mime', 'rmarkdown', 'rprojroot', 'stringi', 'stringr', 'tinytex', 'xfun', 'yaml'), \
+     #repos='https://mirror.las.iastate.edu/CRAN/', \
+     #dependencies=TRUE, \
+     #clean = TRUE)"
 
   # Install extra stuff
   apt-get install -y --no-install-recommends \
