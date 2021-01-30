@@ -206,6 +206,12 @@ From: x11vnc/desktop:20.04
     # Install webpack - 32 MB
     /usr/bin/npm install -g webpack
     
+    echo "    ForwardX11 yes" >> /etc/ssh/ssh_config
+    echo "    Port 2222" >> /etc/ssh/ssh_config
+    echo "    ServerAliveInterval 60" >> /etc/ssh/ssh_config
+    echo "    ForwardX11Timeout 596h" >> /etc/ssh/ssh_config
+    echo "    ForwardAgent yes" >> /etc/ssh/ssh_config
+    echo "    GSSAPIDelegateCredentials no" >> /etc/ssh/ssh_config
  
     
   # Install TurboVNC
