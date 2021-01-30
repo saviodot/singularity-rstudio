@@ -218,6 +218,8 @@ From: x11vnc/desktop:20.04
     echo "X11Forwarding yes" >> /etc/ssh/sshd_config
     echo "X11UseLocalhost no" >> /etc/ssh/sshd_config
     echo "X11Forwarding yes" >> /etc/ssh/sshd_config
+    echo "PubKeyAuthentication No" >> /etc/ssh/sshd_config
+    echo "PasswordAuthentication Yes" >> /etc/ssh/sshd_config
     echo "Port 2222" >> /etc/ssh/sshd_config
 
     echo "ForwardX11Timeout 596h" >> /etc/ssh/sshd_config
@@ -281,9 +283,9 @@ From: x11vnc/desktop:20.04
   # Install Visual Studio Code
   /bin/bash /opt/vs-code-desktop.sh --install
   
-  chmod 600 /etc/ssh/ && \
-  chmod 600 /var/lib/netdata && \
-  chmod 600 /var/log/netdata
+  chmod -R 600 /etc/ssh/ && \
+  chmod -R 600 /var/lib/netdata && \
+  chmod -R 600 /var/log/netdata
 
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
