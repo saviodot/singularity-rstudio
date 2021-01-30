@@ -212,7 +212,16 @@ From: x11vnc/desktop:20.04
     echo "    ForwardX11Timeout 596h" >> /etc/ssh/ssh_config
     echo "    ForwardAgent yes" >> /etc/ssh/ssh_config
     echo "    GSSAPIDelegateCredentials no" >> /etc/ssh/ssh_config
- 
+ # Install supervisor for process supervision
+
+    apt-get update && \
+    # Create sshd run directory - required for starting process via supervisor
+    mkdir -p /var/run/sshd && chmod 400 /var/run/sshd && \
+    # Install rsyslog for syslog logging
+    apt-get install -y --no-install-recommends rsyslog && \
+    pip install --no-cache-dir --upgrade supervisor supervisor-stdout && \
+    # supervisor needs this logging path
+    mkdir -p /var/log/supervisor/
     
   # Install TurboVNC
   wget https://sourceforge.net/projects/turbovnc/files/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb -q
