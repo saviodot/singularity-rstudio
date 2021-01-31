@@ -293,8 +293,8 @@ From: x11vnc/desktop:20.04
   chmod -R 755 /var/log/netdata && \
   chown -R 3018:2300 /var/log/netdata
   
-  ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null
-  ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null
+  /bin/bash -c "ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null"
+  /bin/bash -c "ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null"
   chmod 600 /etc/ssh/ssh_host_dsa_key
   chmod 600 /etc/ssh/ssh_host_rsa_key
   
