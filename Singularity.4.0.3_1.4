@@ -291,6 +291,8 @@ From: x11vnc/desktop:20.04
   chmod -R 755 /var/log/netdata && \
   #chown -R 3018:2300 /var/log/netdata
 
+  sudo sysctl kernel.shmmni=32000
+
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
