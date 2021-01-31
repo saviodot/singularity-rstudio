@@ -284,14 +284,21 @@ From: x11vnc/desktop:20.04
   # Install Visual Studio Code
   /bin/bash /opt/vs-code-desktop.sh --install
   
+  mkdir /var/lib/netdata/lock && \
+  mkdir /var/lib/netdata/registry && \
   chmod -R 755 /etc/ssh/ && \
   chown -R 3018:2300 /etc/ssh/ && \
   chmod -R 755 /var/lib/netdata && \
   chown -R 3018:2300 /var/lib/netdata && \
   chmod -R 755 /var/log/netdata && \
   chown -R 3018:2300 /var/log/netdata
-
-  echo "kernel.shmmni=524288" >> /etc/sysctl.conf
+  
+  ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null
+  ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null
+  chmod 600 /etc/ssh/ssh_host_dsa_key
+  chmod 600 /etc/ssh/ssh_host_rsa_key
+  
+  #echo "kernel.shmmni=524288" >> /etc/sysctl.conf
 
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
