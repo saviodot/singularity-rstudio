@@ -222,9 +222,9 @@ From: x11vnc/desktop:20.04
     echo "PasswordAuthentication Yes" >> /etc/ssh/sshd_config
     echo "Port 2222" >> /etc/ssh/sshd_config
 
-    echo "ForwardX11Timeout 596h" >> /etc/ssh/sshd_config
-    echo "ForwardAgent yes" >> /etc/ssh/sshd_config
-    echo "GSSAPIDelegateCredentials no" >> /etc/ssh/sshd_config
+    #echo "ForwardX11Timeout 596h" >> /etc/ssh/ssh_config
+    #echo "ForwardAgent yes" >> /etc/ssh/ssh_config
+    #echo "GSSAPIDelegateCredentials no" >> /etc/ssh/ssh_config
     
  # prepare ssh for inter-container communication for remote python kernel
     chmod a+rwx /usr/bin/fix-permissions.sh
