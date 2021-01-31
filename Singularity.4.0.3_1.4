@@ -254,7 +254,7 @@ From: x11vnc/desktop:20.04
     apt-get update && \
     # Create sshd run directory - required for starting process via supervisor
     #mkdir -p /var/run/sshd && chmod 400 /var/run/sshd && \
-    mkdir -p /var/run/sshd && chmod 755 /var/run/sshd && \
+    mkdir -p /var/run/sshd && chmod 777 /var/run/sshd && \
     # Install rsyslog for syslog logging
     apt-get install -y --no-install-recommends rsyslog && \
     pip install --no-cache-dir --upgrade supervisor supervisor-stdout && \
@@ -286,14 +286,16 @@ From: x11vnc/desktop:20.04
   
   mkdir /var/lib/netdata/lock && \
   mkdir /var/lib/netdata/registry && \
-  chmod -R 755 /etc/ssh/ && \
+  chmod -R 777 /etc/ssh/ && \
   chown -R 3018:2300 /etc/ssh/ && \
-  chmod -R 755 /var/lib/netdata && \
+  chmod -R 777 /var/lib/netdata && \
   chown -R 3018:2300 /var/lib/netdata && \
-  chmod -R 755 /var/log/netdata && \
+  chmod -R 777 /var/log/netdata && \
   chown -R 3018:2300 /var/log/netdata && \
-  chmod -R 755 /var/cache/netdata && \
-  chown -R 3018:2300 /var/cache/netdata
+  chmod -R 777 /var/cache/netdata && \
+  chown -R 3018:2300 /var/cache/netdata && \
+  touch /var/cache/netdata/netdata-meta.db && \
+  chmod 777 /var/cache/netdata/netdata-meta.db
   
   /bin/bash -c "ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null"
   /bin/bash -c "ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null"
