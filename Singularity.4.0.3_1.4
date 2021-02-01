@@ -284,45 +284,16 @@ From: x11vnc/desktop:20.04
   # Install Visual Studio Code
   /bin/bash /opt/vs-code-desktop.sh --install
   
-  mkdir /var/lib/netdata/lock && \
-  mkdir /var/lib/netdata/registry && \
-  #chmod -R 600 /etc/ssh/ && \
-  #chown -R 3018:2300 /etc/ssh/ && \
-  #chmod -R 777 /usr/share/netdata/ && \
-  #chown -R 3018:2300  /usr/share/netdata/ && \
-  #chmod 777 /usr/share/netdata/web/index.html && \
-  #chown -R netdata:netdata /usr/share/netdata/web
+  chmod -R 777 /etc/ssh/ && \
+  chown -R 3018:2300 /etc/ssh/ && \
+
   
-  # Apply the permissions as described in
-  # https://docs.netdata.cloud/docs/netdata-security/#netdata-directories, but own everything by root group due to https://github.com/netdata/netdata/pull/6543
-  # hadolint ignore=DL3013
+  /bin/bash -c "ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null"
+  /bin/bash -c "ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null"
+  chmod 777 /etc/ssh/ssh_host_dsa_key
+  chmod 777 /etc/ssh/ssh_host_rsa_key
   
-  #chown -R root:root \
-        #/etc/netdata \
-        #/usr/share/netdata \
-        #/usr/libexec/netdata && \
-  #chown -R netdata:root \
-        #/usr/lib/netdata \
-        #/var/cache/netdata \
-        #/var/lib/netdata \
-        #/var/log/netdata && \
-  #chown -R netdata:netdata /var/lib/netdata/cloud.d && \
-  #chmod 0700 /var/lib/netdata/cloud.d && \
-  #chmod 0755 /usr/libexec/netdata/plugins.d/*.plugin && \
-  #chmod 4755 \
-        #/usr/libexec/netdata/plugins.d/cgroup-network \
-        #/usr/libexec/netdata/plugins.d/apps.plugin \
-        #/usr/libexec/netdata/plugins.d/freeipmi.plugin && \
-    # Group write permissions due to: https://github.com/netdata/netdata/pull/6543
-  #find /var/lib/netdata /var/cache/netdata -type d -exec chmod 0770 {} \; && \
-  #find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \;
-  
-  #/bin/bash -c "ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null"
-  #/bin/bash -c "ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null"
-  #chmod 600 /etc/ssh/ssh_host_dsa_key
-  #chmod 600 /etc/ssh/ssh_host_rsa_key
-  
-  #echo "kernel.shmmni=524288" >> /etc/sysctl.conf
+  touch /etc/netdata/.opt-out-from-anonymous-statistics
 
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
