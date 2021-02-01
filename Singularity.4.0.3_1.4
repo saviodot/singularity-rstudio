@@ -288,9 +288,9 @@ From: x11vnc/desktop:20.04
   mkdir /var/lib/netdata/registry && \
   chmod -R 600 /etc/ssh/ && \
   chown -R 3018:2300 /etc/ssh/ && \
-  chmod -R 755 /usr/share/netdata/ && \
+  chmod -R 777 /usr/share/netdata/ && \
   chown -R 3018:2300  /usr/share/netdata/ && \
-  chmod 755 /usr/share/netdata/web/index.html && \
+  chmod 777 /usr/share/netdata/web/index.html && \
   chown -R netdata:netdata /usr/share/netdata/web
   
   # Apply the permissions as described in
