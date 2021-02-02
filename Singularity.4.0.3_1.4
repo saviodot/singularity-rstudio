@@ -221,10 +221,6 @@ From: x11vnc/desktop:20.04
     echo "PubKeyAuthentication No" >> /etc/ssh/sshd_config
     echo "PasswordAuthentication Yes" >> /etc/ssh/sshd_config
     echo "Port 2222" >> /etc/ssh/sshd_config
-
-    #echo "ForwardX11Timeout 596h" >> /etc/ssh/ssh_config
-    #echo "ForwardAgent yes" >> /etc/ssh/ssh_config
-    #echo "GSSAPIDelegateCredentials no" >> /etc/ssh/ssh_config
     
  # prepare ssh for inter-container communication for remote python kernel
     chmod a+rwx /usr/bin/fix-permissions.sh
@@ -253,8 +249,7 @@ From: x11vnc/desktop:20.04
 
     apt-get update && \
     # Create sshd run directory - required for starting process via supervisor
-    #mkdir -p /var/run/sshd && chmod 400 /var/run/sshd && \
-    mkdir -p /var/run/sshd && chmod 777 /var/run/sshd && \
+    mkdir -p /var/run/sshd && chmod 400 /var/run/sshd && \
     # Install rsyslog for syslog logging
     apt-get install -y --no-install-recommends rsyslog && \
     pip install --no-cache-dir --upgrade supervisor supervisor-stdout && \
@@ -284,14 +279,6 @@ From: x11vnc/desktop:20.04
   # Install Visual Studio Code
   /bin/bash /opt/vs-code-desktop.sh --install
   
-  chmod -R 777 /etc/ssh/ && \
-  chown -R 3018:2300 /etc/ssh/ && \
-
-  
-  /bin/bash -c "ssh-keygen -t dsa -N '' -q -f /etc/ssh/ssh_host_dsa_key <<<y 2>&1 >/dev/null"
-  /bin/bash -c "ssh-keygen -t rsa -N '' -q -f /etc/ssh/ssh_host_rsa_key <<<y 2>&1 >/dev/null"
-  chmod 777 /etc/ssh/ssh_host_dsa_key
-  chmod 777 /etc/ssh/ssh_host_rsa_key
   
   touch /etc/netdata/.opt-out-from-anonymous-statistics
 
