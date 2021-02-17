@@ -1,0 +1,296 @@
+BootStrap: docker
+From: x11vnc/desktop:18.04
+
+%labels
+  Maintainer Savio Chow
+  R_Version 4.0.3
+  RStudio_Version 1.4.1103
+  Image_Name singularity-rstudio-4.0.3vnc-18.04
+  Image_Version singularity-rstudio-4.0.3vnc_0007_18.04
+
+%help
+  This will run RStudio Server with tidyverse and support for knitting
+
+%apprun vncserver
+  exec vncserver "${@}"
+
+%apprun vncpasswd
+  exec vncpasswd "${@}"
+
+%runscript
+  exec port_and_password "${@}"
+
+%apprun R
+  exec R "${@}"
+
+%apprun Rscript
+  exec Rscript "${@}"
+
+%apprun rserver
+  exec rserver "${@}"
+
+%apprun rstudio
+  exec rserver "${@}"
+
+%apprun default
+  exec "${@}"
+
+%apprun pp
+  exec port_and_password "${@}"
+
+
+%environment
+  export PATH=/usr/lib/rstudio-server/bin:${PATH}:/usr/lib/rstudio-server/bin/pandoc
+  export SHELL=/bin/bash
+  export LC_ALL=en_US.UTF-8
+  export LANG=en_US.UTF-8
+  export LANGUAGE=en_US.UTF-8
+  export PATH=/opt/TurboVNC/bin:${PATH}
+  export RSTUDIO_PASSWORD
+  
+%setup
+  install -Dv \
+    rstudio_auth_1_3.sh \
+    ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/rstudio_auth
+  install -Dv \
+    ldap_auth.py \
+    ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/ldap_auth
+
+  install -Dv \
+    port_and_password_1_3.sh \
+    ${SINGULARITY_ROOTFS}/usr/lib/rstudio-server/bin/port_and_password
+
+    
+
+%files
+  resources/tools/vs-code-server.sh /opt
+  resources/tools/ungit.sh /opt
+  resources/tools/netdata.sh /opt
+  resources/tools/filebrowser.sh /opt
+  resources/tools/vs-code-desktop.sh /opt
+  resources/tools/fix-permissions.sh /usr/bin/
+%post
+  # Software versions
+  export R_VERSION=4.0.3
+  export RSTUDIO_VERSION=1.4.1103
+  export TURBOVNC_VERSION=2.1.2
+
+  export DEBIAN_FRONTEND=noninteractive
+
+  # Get dependencies
+  add-apt-repository ppa:cran/libgit2
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    apt-utils \
+    gnupg2 \
+    xauth \
+    xfonts-base \
+    xkb-data \
+    x11-xkb-utils \
+    xserver-xorg-core \
+    ubuntu-gnome-desktop \
+    ca-certificates \
+    wget \
+    gdebi-core \
+    libssh2-1-dev \
+    libgit2-dev \
+    libproj-dev \
+    locales
+
+  # Configure default locale
+  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  locale-gen en_US.utf8
+  /usr/sbin/update-locale LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+  export LANG=en_US.UTF-8
+  export RSTUDIO_PASSWORD
+
+  # Install R
+  echo "deb http://cran.r-project.org/bin/linux/ubuntu bionic-cran40/" > /etc/apt/sources.list.d/r.list
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+  # apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    r-base=${R_VERSION}* \
+    r-base-core=${R_VERSION}* \
+    r-base-dev=${R_VERSION}* \
+    r-recommended=${R_VERSION}* \
+    r-base-html=${R_VERSION}* \
+    r-doc-html=${R_VERSION}* \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libcairo2-dev \
+    libxt-dev
+
+  # Add a default CRAN mirror
+  echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')" >> /usr/lib/R/etc/Rprofile.site
+
+  # Add a directory for host R libraries
+  mkdir -p /library
+  echo "R_LIBS_SITE=/library:\${R_LIBS_SITE}" >> /usr/lib/R/etc/Renviron.site
+
+  # Clean up
+  # rm -rf /var/lib/apt/lists/*
+
+  # Install RStudio Server
+  # apt-get update
+  apt-get install -y --no-install-recommends \
+    ca-certificates \
+    wget \
+    gdebi-core \
+    libssl1.1 \
+    libssl-dev \
+    dpkg-sig \
+    python3-ldap3
+
+  gpg --keyserver keys.gnupg.net --recv-keys 3F32EE77E331692F
+
+  wget --no-verbose \
+       -O rstudio-server.deb \
+       "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" && \
+       dpkg-sig --verify rstudio-server.deb && \
+    gdebi -n rstudio-server.deb && \
+    rm rstudio-server.deb
+
+  # Install tidyverse, here, and packages necessary for knitting to HTML 
+  #Rscript -e "install.packages(pkgs = c('tidyverse','here','caTools','rprojroot','Rcpp', 'base64enc', 'digest', 'evaluate', 'glue', 'highr', 'htmltools', 'jsonlite', 'knitr', 'magrittr', 'markdown', 'mime', 'rmarkdown', 'rprojroot', 'stringi', 'stringr', 'tinytex', 'xfun', 'yaml'), \
+     #repos='https://mirror.las.iastate.edu/CRAN/', \
+     #dependencies=TRUE, \
+     #clean = TRUE)"
+
+  # Install extra stuff
+  apt-get install -y --no-install-recommends \
+    bsdmainutils \
+    iproute2 \
+    libxml2-dev \
+    curl \
+    wget \
+    bzip2 \
+    ca-certificates \
+    sudo \
+    locales \
+    emacs \
+    less \
+    make \
+    swig \
+    graphviz libgraphviz-dev \
+    git \
+    subversion \
+    jed \
+    tree \
+    ssh \
+    htop \
+    tmux \
+    rsync \
+    jq
+  
+# Install node.js
+    apt-get update && \
+    # https://nodejs.org/en/about/releases/ use even numbered releases
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - && \
+    apt-get install -y nodejs && \
+    # Fix permissions
+    chmod a+rwx /usr/bin/node && \
+    chmod a+rwx /usr/bin/npm && \
+    # Fix node versions - put into own dir and before conda:
+    mkdir -p /opt/node/bin && \
+    ln -s /usr/bin/node /opt/node/bin/node && \
+    ln -s /usr/bin/npm /opt/node/bin/npm && \
+    # Install YARN
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends yarn && \
+    # Install typescript 
+    /usr/bin/npm install -g typescript && \
+    # Install webpack - 32 MB
+    /usr/bin/npm install -g webpack
+    echo "AllowUsers root" >> /etc/ssh/sshd_config
+    echo "AllowUsers hcchow" >> /etc/ssh/sshd_config
+    echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_config
+    echo "PermitUserEnvironment yes" >> /etc/ssh/sshd_config
+    echo "ClientAliveInterval 60" >> /etc/ssh/sshd_config
+    echo "ClientAliveCountMax 10" >> /etc/ssh/sshd_config
+    echo "GatewayPorts clientspecified" >> /etc/ssh/sshd_config
+    #echo "Subsystem sftp internal-sftp" >> /etc/ssh/sshd_config
+    echo "AllowAgentForwarding yes" >> /etc/ssh/sshd_config
+    echo "X11Forwarding yes" >> /etc/ssh/sshd_config
+    echo "X11UseLocalhost no" >> /etc/ssh/sshd_config
+    echo "X11Forwarding yes" >> /etc/ssh/sshd_config
+    echo "PubKeyAuthentication No" >> /etc/ssh/sshd_config
+    echo "PasswordAuthentication Yes" >> /etc/ssh/sshd_config
+    echo "Port 2222" >> /etc/ssh/sshd_config
+    
+ # prepare ssh for inter-container communication for remote python kernel
+    chmod a+rwx /usr/bin/fix-permissions.sh
+    
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openssh-client \
+        openssh-server \
+        # SSLH for SSH + HTTP(s) Multiplexing
+        # sslh \
+        # SSH Tooling
+        autossh \
+        mussh && \
+    chmod go-w $HOME && \
+    mkdir -p $HOME/.ssh/ && \
+    # create empty config file if not exists
+    touch $HOME/.ssh/config  && \
+    sudo chown -R 3018:2300 $HOME/.ssh && \
+    chmod 700 $HOME/.ssh && \
+    printenv >> $HOME/.ssh/environment && \
+    chmod -R a+rwx /usr/local/bin/ && \
+    # Fix permissions
+    /usr/bin/fix-permissions.sh   
+
+# Install supervisor for process supervision
+
+    apt-get update && \
+    # Create sshd run directory - required for starting process via supervisor
+    mkdir -p /var/run/sshd && chmod 400 /var/run/sshd && \
+    # Install rsyslog for syslog logging
+    apt-get install -y --no-install-recommends rsyslog && \
+    pip install --no-cache-dir --upgrade supervisor supervisor-stdout && \
+    # supervisor needs this logging path
+    mkdir -p /var/log/supervisor/
+    
+  # Install TurboVNC
+  wget https://sourceforge.net/projects/turbovnc/files/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb -q
+  dpkg -i turbovnc_${TURBOVNC_VERSION}_amd64.deb
+  rm turbovnc_${TURBOVNC_VERSION}_amd64.deb
+
+  ## VS Code Server: https://github.com/codercom/code-server
+  /bin/bash /opt/vs-code-server.sh --install
+
+  ## ungit
+  /bin/bash /opt/ungit.sh --install
+
+  ## netdata
+  /bin/bash /opt/netdata.sh --install
+
+  ## Glances webtool is installed in python section below
+  pip install --no-cache-dir 'glances[action,browser,cloud,cpuinfo,docker,export,folders,gpu,graph,ip,raid,snmp,web,wifi]'
+  
+  ## Filebrowser
+  #/bin/bash /opt/filebrowser.sh --install
+  
+  # Install Visual Studio Code
+  /bin/bash /opt/vs-code-desktop.sh --install
+  
+  
+  touch /etc/netdata/.opt-out-from-anonymous-statistics
+  
+  # Solve RCurl dependency issue
+  add-apt-repository ppa:xapienz/curl34
+  apt-get update
+  apt-get install curl
+  
+  # Clean up
+  apt-get clean && rm -rf /var/lib/apt/lists/*
+
+  # Make Mountpoints
+  mkdir -p /data
+  mkdir -p /scratch
+  mkdir -p /workspace
