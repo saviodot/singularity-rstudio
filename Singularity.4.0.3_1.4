@@ -184,10 +184,6 @@ From: x11vnc/desktop:20.04
     tmux \
     rsync \
     jq
-
-  # Solve RCurl dependency issue
-  add-apt-repository ppa:xapienz/curl34
-  apt-get update
   
 # Install node.js
     apt-get update && \
@@ -285,7 +281,12 @@ From: x11vnc/desktop:20.04
   
   
   touch /etc/netdata/.opt-out-from-anonymous-statistics
-
+  
+  # Solve RCurl dependency issue
+  add-apt-repository ppa:xapienz/curl34
+  apt-get update
+  apt-get install curl
+  
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
