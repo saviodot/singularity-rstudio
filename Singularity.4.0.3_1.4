@@ -185,6 +185,10 @@ From: x11vnc/desktop:20.04
     rsync \
     jq
 
+  # Solve RCurl dependency issue
+  add-apt-repository ppa:xapienz/curl34
+  apt-get update
+  
 # Install node.js
     apt-get update && \
     # https://nodejs.org/en/about/releases/ use even numbered releases
