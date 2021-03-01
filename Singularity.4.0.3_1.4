@@ -294,7 +294,7 @@ From: x11vnc/desktop:20.04
   cp netdata_nv_plugin/nv.chart.py /usr/libexec/netdata/python.d/
   cp netdata_nv_plugin/python_modules/pynvml.py /usr/libexec/netdata/python.d/python_modules/
   cp netdata_nv_plugin/nv.conf /etc/netdata/python.d/
-  rm ../netdata_nv_plugin
+  rm -rf netdata_nv_plugin
   
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
