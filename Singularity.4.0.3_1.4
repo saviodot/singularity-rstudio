@@ -289,12 +289,17 @@ From: x11vnc/desktop:20.04
   apt-get install -y --no-install-recommends curl
   
   # nvidia-smi plugin for netdata
-  cd /tmp/
-  git clone https://github.com/coraxx/netdata_nv_plugin --depth 1
-  cp netdata_nv_plugin/nv.chart.py /usr/libexec/netdata/python.d/
-  cp netdata_nv_plugin/python_modules/pynvml.py /usr/libexec/netdata/python.d/python_modules/
-  cp netdata_nv_plugin/nv.conf /etc/netdata/python.d/
-  rm -rf netdata_nv_plugin
+  pip install --upgrade --force-reinstall nvidia-ml-py3
+  #cd /tmp/
+  #git clone https://github.com/coraxx/netdata_nv_plugin --depth 1
+  #cp netdata_nv_plugin/nv.chart.py /usr/libexec/netdata/python.d/
+  #cp netdata_nv_plugin/python_modules/pynvml.py /usr/libexec/netdata/python.d/python_modules/
+  #cp netdata_nv_plugin/nv.conf /etc/netdata/python.d/
+  git clone https://github.com/Splo0sh/netdata_nv_plugin --depth 1 /tmp/netdata_nv_plugin
+  cp /tmp/netdata_nv_plugin/nv.chart.py /usr/libexec/netdata/python.d/
+  cp /tmp/netdata_nv_plugin/python_modules/pynvml.py /usr/libexec/netdata/python.d/python_modules/
+  cp /tmp/netdata_nv_plugin/nv.conf /etc/netdata/python.d/
+  rm -rf /tmp/netdata_nv_plugin
   
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
