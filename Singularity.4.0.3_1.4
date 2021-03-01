@@ -300,7 +300,7 @@ From: x11vnc/desktop:20.04
   cp /tmp/netdata_nv_plugin/python_modules/pynvml.py /usr/libexec/netdata/python.d/python_modules/
   cp /tmp/netdata_nv_plugin/nv.conf /etc/netdata/python.d/
   rm -rf /tmp/netdata_nv_plugin
-  
+  chmod -R 755 /usr/libexec/netdata
   # Clean up
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
