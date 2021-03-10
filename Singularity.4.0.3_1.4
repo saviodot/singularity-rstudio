@@ -288,6 +288,9 @@ From: x11vnc/desktop:20.04
   apt-get update
   apt-get install -y --no-install-recommends curl
   
+  #jdk for h2o
+  apt-get install -y wget unzip openjdk-8-jdk python-pip python-sklearn python-pandas python-numpy python-matplotlib software-properties-common python-software-properties
+  
   # nvidia-smi plugin for netdata
   pip install --upgrade --force-reinstall nvidia-ml-py3
   #cd /tmp/
