@@ -295,6 +295,13 @@ From: x11vnc/desktop:20.04
   #jdk for h2o
   apt-get install -y wget unzip openjdk-8-jdk software-properties-common
   
+  #datamash rs
+  apt-get install -y datamash
+  
+  #libfortran
+  apt-get update
+  apt-get install -y libgfortran4
+  
   # nvidia-smi plugin for netdata
   pip install --upgrade --force-reinstall nvidia-ml-py3
   #cd /tmp/
